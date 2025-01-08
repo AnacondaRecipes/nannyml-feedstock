@@ -1,0 +1,5 @@
+upload_channels:
+  - sfe1ed40
+
+channels:
+  - https://staging.continuum.io/prefect/fs/gcsfs-feedstock/pr2/aa4c18a
