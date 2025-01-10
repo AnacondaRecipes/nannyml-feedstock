@@ -2,4 +2,5 @@ upload_channels:
   - sfe1ed40
 
 channels:
-  - https://staging.continuum.io/prefect/fs/gcsfs-feedstock/pr2/aa4c18a
+  - https://staging.continuum.io/prefect/fs/gcsfs-feedstock/pr3/ff820ee # gcsfs 2022.11.0
+  - https://staging.continuum.io/prefect/fs/filesystem-spec-feedstock/pr19/bbeab88 # fsspec 2022.11.0
