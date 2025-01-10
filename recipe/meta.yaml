@@ -61,13 +61,6 @@ requirements:
     # psycopg2 on defaults is basically psycopg2-binary (without the bundled/vendored dependencies)
     - psycopg2
 
-{% set ignore_tests = "" %}
-#Fatal Python error: Segmentation fault
-#Thread 0x000000010b16be00 (most recent call first):
-#File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1659 in __init_from_np2d
-#File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1538 in _lazy_init
-{% set ignore_tests = " --ignore=tests/test_ranking.py" %}  # [osx-64]
-
 test:
   source_files:
     - tests
@@ -77,7 +70,12 @@ test:
     - pip check
     - nannyml --help
     - nml --help
-    - pytest -v {{ ignore_tests }} tests
+    # Disable tests only on osx-64 (Seg Faults in random places)
+    #Fatal Python error: Segmentation fault
+    #Thread 0x000000010b16be00 (most recent call first):
+    #File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1659 in __init_from_np2d
+    #File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1538 in _lazy_init
+    - pytest -v tests # [not osx-64]
   requires:
     - pip
     - pytest >=6.2.4,<7
