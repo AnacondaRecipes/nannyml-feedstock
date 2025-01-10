@@ -79,6 +79,7 @@ about:
   doc_url: https://nannyml.readthedocs.io/en/stable/
   summary: NannyML, Your library for monitoring model performance.
   license: Apache-2.0
+  license_family: Apache
   license_file: LICENSE
   doc_url: https://www.nannyml.com/
   dev_url: https://github.com/nannyml/nannyml/
