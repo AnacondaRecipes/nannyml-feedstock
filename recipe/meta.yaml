@@ -33,7 +33,7 @@ requirements:
     - scikit-learn >=1.2,<2.0
     - joblib >=1.1.0,<2.0
     - category_encoders >=2.3.0,<3.0.0
-    - matplotlib >=3.7,<4.0
+    - matplotlib-base >=3.7,<4.0
     - plotly >=5.6.0,<6.0
     - scipy >=1.10,<2.0
     - numpy >=1.24,<1.25
@@ -57,9 +57,9 @@ requirements:
     - types-pyyaml >=6.0.12.8,<7.0
     - types-python-dateutil >=2.8.19.10,<3.0
   run_constrainted:
-    - sqlmodel
+    - sqlmodel >=0.0.19,<0.1.0
     # psycopg2 on defaults is basically psycopg2-binary (without the bundled/vendored dependencies)
-    - psycopg2
+    - psycopg2 >=2.9.3,<3
 
 test:
   source_files:
@@ -75,11 +75,11 @@ test:
     #Thread 0x000000010b16be00 (most recent call first):
     #File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1659 in __init_from_np2d
     #File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1538 in _lazy_init
-    - pytest -v tests # [not osx-64]
+    - pytest -v tests  # [not osx-64]
   requires:
     - pip
     - pytest >=6.2.4,<7
-    - pytest-mock >3.7.0,<4.0
+    - pytest-mock >=3.7.0,<4.0
     - pytest-lazy-fixture >=0.6.3,<1.0
 
 about:
