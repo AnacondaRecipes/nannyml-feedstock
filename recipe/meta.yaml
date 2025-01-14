@@ -75,7 +75,7 @@ test:
     #Thread 0x000000010b16be00 (most recent call first):
     #File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1659 in __init_from_np2d
     #File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1538 in _lazy_init
-    - pytest -v tests 
+    - pytest -v tests  # [not osx-64]
   requires:
     - pip
     - pytest >=6.2.4,<7
