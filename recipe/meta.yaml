@@ -56,6 +56,7 @@ requirements:
     - python-dotenv >=0.21.0,<1.0
     - types-pyyaml >=6.0.12.8,<7.0
     - types-python-dateutil >=2.8.19.10,<3.0
+    - blas=*=openblas  # [osx and x86_64]
   run_constrainted:
     - sqlmodel >=0.0.19,<0.1.0
     # psycopg2 on defaults is basically psycopg2-binary (without the bundled/vendored dependencies)
