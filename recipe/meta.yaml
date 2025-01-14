@@ -15,7 +15,7 @@ build:
     - nannyml=nannyml.cli.cli:cli
     - nml=nannyml.cli.cli:cli
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # https://github.com/NannyML/nannyml/blob/v0.12.1/pyproject.toml#L33
+  # https://github.com/NannyML/nannyml/blob/v0.12.1/pyproject.toml#L31
   skip: True  # [py<38 or py>311]
   # nothing provides requested flaml >=1.0.11,<2.0 on s390x
   # nothing provides requested python-kaleido 0.2.1.* on s390x
