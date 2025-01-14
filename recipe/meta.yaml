@@ -57,6 +57,8 @@ requirements:
     - types-pyyaml >=6.0.12.8,<7.0
     - types-python-dateutil >=2.8.19.10,<3.0
   run_constrainted:
+    # mkl variant pulls in intel-openmp which conflicts with llvm-openmp. i.e. force to use openblas variant of numpy, scipy, etc.
+    - blas=*=openblas  # [osx and x86_64]
     - sqlmodel >=0.0.19,<0.0.20
     # psycopg2 on defaults is basically psycopg2-binary (without the bundled/vendored dependencies)
     - psycopg2 >=2.9.3,<3
@@ -75,7 +77,7 @@ test:
     #Thread 0x000000010b16be00 (most recent call first):
     #File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1659 in __init_from_np2d
     #File "/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_cdtuv5r_1z/croot/nannyml_1736512349061/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p/lib/python3.10/site-packages/lightgbm/basic.py", line 1538 in _lazy_init
-    - pytest -v tests  # [not osx-64]
+    - pytest -v tests
   requires:
     - pip
     - pytest >=6.2.4,<7
