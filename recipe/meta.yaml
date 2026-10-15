@@ -81,9 +81,7 @@ requirements:
 # jemalloc memory allocation errors (Unsupported system page size).
 # Deselect only the affected test; all other tests remain enabled.
 {% set deselected_tests = "" %}
-{% if linux and aarch64 %}
-{% set deselected_tests += " --deselect=tests/io/test_writers.py::test_raw_files_writer_raises_no_exceptions_when_writing_to_parquet" %}
-{% endif %}
+{% set deselected_tests = deselected_tests + " --deselect=tests/io/test_writers.py::test_raw_files_writer_raises_no_exceptions_when_writing_to_parquet" %}  # [linux and aarch64]
 
 test:
   source_files:
@@ -94,7 +92,7 @@ test:
     - pip check
     - nannyml --help
     - nml --help
-    - pytest -v tests {{ deselect_tests }}
+    - pytest -v tests {{ deselected_tests }}
   requires:
     - pip
     - pytest >=6.2.4,<7
@@ -108,12 +106,11 @@ test:
 
 about:
   home: https://github.com/nannyml/nannyml
-  doc_url: https://nannyml.readthedocs.io/en/stable/
+  doc_url: https://nannyml.readthedocs.io
   summary: NannyML, Your library for monitoring model performance.
   license: Apache-2.0
   license_family: Apache
   license_file: LICENSE
-  doc_url: https://www.nannyml.com/
   dev_url: https://github.com/nannyml/nannyml/
   description: NannyML is an open-source python library that allows you to estimate post-deployment model performance (without access to targets), detect data drift, and intelligently link data drift alerts back to changes in model performance.
 
