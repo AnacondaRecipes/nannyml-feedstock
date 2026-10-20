@@ -1,5 +1,5 @@
 {% set name = "nannyml" %}
-{% set version = "0.12.1" %}
+{% set version = "0.13.1" %}
 
 package:
   name: {{ name }}
@@ -7,19 +7,16 @@ package:
 
 source:
   url: https://github.com/NannyML/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 67801824c003ec37b055a6c0f4d540e20d3eff8f84cb6e202a40d2b349c092df
+  sha256: 4abd56bbe355fbf3f8f878d6f0304635627a88f9ecf5cf19149722bfec9f09c5
 
 build:
-  number: 1
+  number: 0
   entry_points:
     - nannyml=nannyml.cli.cli:cli
     - nml=nannyml.cli.cli:cli
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # https://github.com/NannyML/nannyml/blob/v0.12.1/pyproject.toml#L31
-  skip: True  # [py<38 or py>311]
-  # nothing provides requested flaml >=1.0.11,<2.0 on s390x
-  # nothing provides requested python-kaleido 0.2.1.* on s390x
-  skip: True  # [s390x]
+  # https://github.com/NannyML/nannyml/blob/4c86ee350dc541cb244f965cf555b4b2a004ae99/pyproject.toml#L31
+  skip: true  # [py<39 or py>312]
 
 requirements:
   host:
@@ -28,47 +25,39 @@ requirements:
     - python
   run:
     - python
-    - pandas >=1.5,<2
-    - python-dateutil >=2.8.2,<3.0.0
-    # Compatibility workaround for nannyml 0.12.1:
-    # scikit-learn 1.6+ removed the 'squared' argument used by NannyML.
-    # Restrict to older versions until the upgrade to nannyml 0.13.1.
-    - scikit-learn >=1.2,<1.6
+    - pandas >=1.4
+    - python-dateutil >=2.8,<3.0.0
+    - scikit-learn >=1.3
     - joblib >=1.1.0,<2.0
-    # Compatibility workaround for nannyml 0.12.1:
-    # category_encoders 2.11+ made statsmodels optional and removed patsy
-    # from required dependencies, which NannyML previously relied on transitively.
-    # Versions 2.8+ also require scikit-learn 1.6+, which is incompatible
-    # with the older API used by NannyML 0.12.1.
-    - category_encoders >=2.3.0,<2.8.0
+    - category_encoders >=2.3.0,<3.0.0
     - matplotlib-base >=3.7,<4.0
     - plotly >=5.6.0,<6.0
-    - scipy >=1.10,<2.0
-    - numpy >=1.24,<1.25
-    - seaborn >=0.13.2,<0.14.0
+    - scipy >=1.9.2
+    - numpy >=1.23
+    - seaborn >=0.13,<0.14
     # kaleido same as python-kaleido
-    - python-kaleido ==0.2.1
-    - pyarrow >=14.0.0,<15.0.0
+    - python-kaleido >=0.2,<0.3
+    - pyarrow >=13.0.0
     - gcsfs >=2022.5.0
-    - pydantic >=2.7.4,<3.0.0
-    - rich >=12.5.1
-    - click >=8.1.3,<9.0.0
+    - pydantic >=2.7
+    - rich >=12.5
+    - click >=8.1,<9.0
     - pyyaml >=6.0,<7.0
-    - jinja2 <3.1
+    - jinja2 >=3.1
     - pyfiglet >=0.8.post1,<0.9
-    - lightgbm >=3.3.2,<4.0
-    - flaml >=1.0.11,<2.0
+    # pyfiglet 0.8.post1 requires pkg_resources, which was removed in setuptools 82.
+    # setuptools is needed at runtime because the NannyML CLI imports pyfiglet.
+    - setuptools <82
+    - lightgbm >=3.3,<4.6
+    - flaml >=2.3.3,<3.0
+    # Required by flaml[automl].
+    - xgboost >=0.90,<3.0
     - s3fs >=2022.8.2
     - apscheduler >=3.9.1,<4.0
-    - analytics-python >=2.3.2,<3.0
-    - python-dotenv >=0.21.0,<0.22.0
-    - types-pyyaml >=6.0.12.8,<7.0
-    - types-python-dateutil >=2.8.19.10,<3.0
-    # Compatibility workaround for nannyml 0.12.1:
-    # pyfiglet 0.8.post1 requires pkg_resources, removed in setuptools 82.0.0.
-    # setuptools is required at runtime because the CLI (nannyml --help)
-    # imports pyfiglet, which depends on pkg_resources.
-    - setuptools <82
+    - segment-analytics-python >=2.3,<3.0
+    - python-dotenv >=1.0,<2.0
+    # NannyML uses statsmodels directly, but upstream does not declare it.
+    - statsmodels
   run_constrained:
     # mkl variant pulls in intel-openmp which conflicts with llvm-openmp. i.e. force to use openblas variant of numpy, scipy, etc.
     - blas=*=openblas  # [osx and x86_64]
@@ -76,10 +65,14 @@ requirements:
     # psycopg2 on defaults is basically psycopg2-binary (without the bundled/vendored dependencies)
     - psycopg2 >=2.9.3,<3
 
-# Compatibility workaround for nannyml 0.12.1:
-# Parquet export tests fail on linux-aarch64 with PyArrow 14.0.2 due to
+# Ignore test modules requiring the legacy pytest-lazy-fixture plugin,
+# which has no Python 3.12 build in Anaconda channels.
+{% set ignored_tests = "" %}
+{% set ignored_tests = "--ignore=tests/io/test_writers.py --ignore=tests/plots/comparison_plots.py" %}  # [py>=312]
+
+# PyArrow Parquet export tests may fail on linux-aarch64 due to
 # jemalloc memory allocation errors (Unsupported system page size).
-# Deselect only the affected test; all other tests remain enabled.
+# Deselect only the affected test until compatibility is revalidated.
 {% set deselected_tests = "" %}
 {% set deselected_tests = deselected_tests + " --deselect=tests/io/test_writers.py::test_raw_files_writer_raises_no_exceptions_when_writing_to_parquet" %}  # [linux and aarch64]
 
@@ -92,17 +85,14 @@ test:
     - pip check
     - nannyml --help
     - nml --help
-    - pytest -v tests {{ deselected_tests }}
+    - pytest -v tests {{ ignored_tests }} {{ deselected_tests }}
   requires:
     - pip
     - pytest >=6.2.4,<7
     - pytest-mock >=3.7.0,<4.0
-    - pytest-lazy-fixture >=0.6.3,<1.0
-    # Compatibility workaround for nannyml 0.12.1:
-    # Newer numexpr versions require NumPy >=1.26, while NannyML restricts
-    # NumPy to >=1.24,<1.25, causing pip check to fail.
-    # Pin to a verified compatible version for Python 3.11.
-    - numexpr ==2.11.0  # [py==311]
+    # Legacy pytest plugin (last released in 2020), unavailable for Python 3.12
+    # in Anaconda and incompatible with pytest >=8.
+    - pytest-lazy-fixture >=0.6.3,<1.0  # [py<312]
 
 about:
   home: https://github.com/nannyml/nannyml
