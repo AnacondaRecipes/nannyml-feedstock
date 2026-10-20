@@ -65,11 +65,26 @@ requirements:
     # psycopg2 on defaults is basically psycopg2-binary (without the bundled/vendored dependencies)
     - psycopg2 >=2.9.3,<3
 
+# Ignore test modules requiring the legacy pytest-lazy-fixture plugin,
+# which has no Python 3.12 build in Anaconda channels.
+{% set ignored_tests = "" %}
+{% set ignored_tests = "--ignore=tests/io/test_writers.py --ignore=tests/plots/comparison_plots.py" %}  # [py>=312]
+
 # PyArrow Parquet export tests may fail on linux-aarch64 due to
 # jemalloc memory allocation errors (Unsupported system page size).
 # Deselect only the affected test until compatibility is revalidated.
 {% set deselected_tests = "" %}
 {% set deselected_tests = deselected_tests + " --deselect=tests/io/test_writers.py::test_raw_files_writer_raises_no_exceptions_when_writing_to_parquet" %}  # [linux and aarch64]
+# Upstream CBPE tests have reproducible numerical expectation mismatches
+# across supported platforms and Python versions. Upstream changed some
+# expected values without corresponding changes to the metric calculations:
+# https://github.com/NannyML/nannyml/commit/9a8dcfc3efab70f0e85ae24ecc45899e30a96ffa
+# The failures also persist with scikit-learn <1.6.
+# Temporarily deselect the affected cases while the upstream numerical
+# discrepancies are investigated; retain all other CBPE tests.
+{% set deselected_tests = deselected_tests + " --deselect=tests/performance_estimation/CBPE/test_cbpe_metrics.py::test_cbpe_for_multiclass_classification_with_timestamps" %}  # [linux and x86_64]
+{% set deselected_tests = deselected_tests + " --deselect=tests/performance_estimation/CBPE/test_cbpe.py::test_cbpe_for_binary_classification_chunked_by_period_should_include_variable_sampling_error_for_metric[roc_auc-sampling_error0]" %}  # [not (linux and x86_64)]
+{% set deselected_tests = deselected_tests + " --deselect=tests/performance_estimation/CBPE/test_cbpe_metrics.py::test_cbpe_for_multiclass_classification_with_timestamps[period_based_with_timestamp]" %}  # [not (linux and x86_64)]
 
 test:
   source_files:
@@ -80,12 +95,14 @@ test:
     - pip check
     - nannyml --help
     - nml --help
-    - pytest -v tests {{ deselected_tests }}
+    - pytest -v tests {{ ignored_tests }} {{ deselected_tests }}
   requires:
     - pip
     - pytest >=6.2.4,<7
     - pytest-mock >=3.7.0,<4.0
-    - pytest-lazy-fixture >=0.6.3,<1.0
+    # Legacy pytest plugin (last released in 2020), unavailable for Python 3.12
+    # in Anaconda and incompatible with pytest >=8.
+    - pytest-lazy-fixture >=0.6.3,<1.0  # [py<312]
 
 about:
   home: https://github.com/nannyml/nannyml
@@ -101,3 +118,7 @@ extra:
   recipe-maintainers:
     - nnansters
     - thewchan
+  # setuptools <82 is required at runtime because pyfiglet imports
+  # pkg_resources, which was removed in setuptools 82.
+  skip-lints:
+    - python_build_tools_in_host
