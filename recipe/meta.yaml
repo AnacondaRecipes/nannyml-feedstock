@@ -65,6 +65,11 @@ requirements:
     # psycopg2 on defaults is basically psycopg2-binary (without the bundled/vendored dependencies)
     - psycopg2 >=2.9.3,<3
 
+# Ignore test modules requiring the legacy pytest-lazy-fixture plugin,
+# which has no Python 3.12 build in Anaconda channels.
+{% set ignored_tests = "" %}
+{% set ignored_tests = "--ignore=tests/io/test_writers.py --ignore=tests/plots/comparison_plots.py" %}  # [py>=312]
+
 # PyArrow Parquet export tests may fail on linux-aarch64 due to
 # jemalloc memory allocation errors (Unsupported system page size).
 # Deselect only the affected test until compatibility is revalidated.
@@ -80,12 +85,14 @@ test:
     - pip check
     - nannyml --help
     - nml --help
-    - pytest -v tests {{ deselected_tests }}
+    - pytest -v tests {{ ignored_tests }} {{ deselected_tests }}
   requires:
     - pip
     - pytest >=6.2.4,<7
     - pytest-mock >=3.7.0,<4.0
-    - pytest-lazy-fixture >=0.6.3,<1.0
+    # Legacy pytest plugin (last released in 2020), unavailable for Python 3.12
+    # in Anaconda and incompatible with pytest >=8.
+    - pytest-lazy-fixture >=0.6.3,<1.0  # [py<312]
 
 about:
   home: https://github.com/nannyml/nannyml
