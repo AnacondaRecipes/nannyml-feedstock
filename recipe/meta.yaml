@@ -59,16 +59,14 @@ requirements:
     # NannyML uses statsmodels directly, but upstream does not declare it.
     - statsmodels
   run_constrained:
-    # mkl variant pulls in intel-openmp which conflicts with llvm-openmp. i.e. force to use openblas variant of numpy, scipy, etc.
-    - blas=*=openblas  # [osx and x86_64]
-    - sqlmodel >=0.0.19,<0.0.20
+    - sqlmodel >=0.0,<0.1
     # psycopg2 on defaults is basically psycopg2-binary (without the bundled/vendored dependencies)
-    - psycopg2 >=2.9.3,<3
+    - psycopg2 >=2.9,<3
 
-# Ignore test modules requiring the legacy pytest-lazy-fixture plugin,
+# Ignore the test module requiring pytest-lazy-fixture,
 # which has no Python 3.12 build in Anaconda channels.
 {% set ignored_tests = "" %}
-{% set ignored_tests = "--ignore=tests/io/test_writers.py --ignore=tests/plots/comparison_plots.py" %}  # [py>=312]
+{% set ignored_tests = "--ignore=tests/io/test_writers.py" %}  # [py>=312]
 
 # PyArrow Parquet export tests may fail on linux-aarch64 due to
 # jemalloc memory allocation errors (Unsupported system page size).
